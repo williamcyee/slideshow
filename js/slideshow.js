@@ -3,20 +3,20 @@ const imageData = new Map();
 // the list of image input fields
 const $inputFormList = $("#url-forms");
 
-let slideIndex = 0;
 let currentImageId = 0;
 let timer;
 
 // const preLoadedImages = [];
-const preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_doctor_patient_computer_ehr_800x600.jpg",
+let preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_doctor_patient_computer_ehr_800x600.jpg",
   "https://www.healthcareitnews.com/sites/default/files/doctor%20with%20ehr%20712_3.jpg",
   "https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
   "http://www.mosmedicalrecordreview.com/blog/wp-content/uploads/2017/09/physician-patient-interaction.jpg"];
+// preLoadedImages = [];
 
 $(document).ready(event => {
   setTimerActions(event);
   hasPreloadedImages = (preLoadedImages != null && preLoadedImages.length > 0);
-  setTimer(hasPreloadedImages ? 15 : 4);
+  setTimer(hasPreloadedImages ? 3 : 4);
 
   if (hasPreloadedImages) {
     setPresetImages(preLoadedImages);
@@ -74,31 +74,6 @@ const setSlideStyleDisplay = (slides, index, display) => {
   slides[index].style.display = display;
  }
 
-function showSlides() {
-  let i;
-  let slides = document.getElementsByClassName("mySlides");
-  let dots = document.getElementsByClassName("dot");
-
-  if (slides.length != 0) {
-    for (i = 0; i < slides.length; i++) {
-      setSlideStyleDisplay(slides, i, "none");
-    }
-    // resetting slideIndex back to 0 
-    if (slideIndex + 1 > slides.length) {
-      slideIndex = 0;
-    }
-    
-    for (i = 0; i < dots.length; i++) {
-      dots[i].className = dots[i].className.replace(" active-dot", "");
-    }
-    slides[slideIndex].style.display = "inline-block";  
-    dots[slideIndex].className += " active-dot";
-    slideIndex++;
-  }
-    setTimeout(showSlides, timer);
-  
-}
-
 function prepopulateImage(numForms) {
   for (let i = 0; i < numForms; i++) {
     addImageFormToHtml(true);
@@ -152,8 +127,8 @@ function buildButtonEnabledDisabled(id, isEnabled) {
 }
 
 function addImageToSlideShow(id) {
-  currentImageId = "image-text-" + id;
-  const url = $("#" + currentImageId).val();
+  imageId = "image-text-" + id;
+  const url = $("#" + imageId).val();
   if (url != null && url != "") {
     addImageUrlToSlideShow(url, "Caption", id);
     addImageFormToHtml(true, "");
@@ -175,7 +150,7 @@ function addUploadedImageToSlideShow(image, captionText, id) {
 
 function setImageToSlideShow(id) {
   let info = imageData.get(id);
-  let display = slideIndex === 0 ? "inline-block" : "none";
+  let display = imageData.length === 0 ? "inline-block" : "none";
 
   const getSlideImageWrapper = (id, display) => "<div class='mySlides fade-image' id='image-" + id + "'style='display:" + display + ";'><div class='numbertext'></div>" +
   "<div class='text'></div></div>";
@@ -197,7 +172,54 @@ function setImageToSlideShow(id) {
   $(".dot-container").append(getDotContainer(id));
 
   if (imageData.size === 1) {
-   showSlides();
+   let slideIndex = 0;
+   let shouldShowNextSlide = true;
+   showSlides(slideIndex, [], shouldShowNextSlide);
+  }
+}
+
+function showSlides(slideIndex, dotActions, shouldShowNextSlide) {
+  console.log(shouldShowNextSlide);
+  const setActionToDot = (dot) => {
+      let id = '#' + dot.getAttribute('id');
+      $(id).on('click', function() {
+        shouldShowNextSlide = false;
+        // showSlides(3, [], true);
+        console.log('User clicked on ' + id);
+      });
+    }
+
+  if (shouldShowNextSlide) {
+    let i;
+    let slides = document.getElementsByClassName("mySlides");
+    let dots = document.getElementsByClassName("dot");
+
+    if (dots.length !== dotActions.length) {
+      Array.prototype.forEach.call(dots, setActionToDot);
+    }
+
+    if (slides.length !== 0) {
+      for (i = 0; i < slides.length; i++) {
+        setSlideStyleDisplay(slides, i, "none");
+      }
+      // resetting slideIndex back to 0 
+      if (slideIndex + 1 > slides.length) {
+        slideIndex = 0;
+      }
+      
+      for (i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active-dot", "");
+        // setActionToDot(dots[i]);
+      }
+      slides[slideIndex].style.display = "inline-block";  
+      dots[slideIndex].className += " active-dot";
+      slideIndex++;
+    }
+    wto = setTimeout(function() {
+      if (shouldShowNextSlide) {
+        showSlides(slideIndex++, dotActions, shouldShowNextSlide)
+      };
+    }, timer);
   }
 }
 
