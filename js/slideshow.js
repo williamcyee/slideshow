@@ -1,16 +1,18 @@
-// stores DOM image objects
-const imageData = new Map();
+// contains, in order, the slideshow data required for each image
+const slideshowValues = [];
 // the list of image input fields
 const $inputFormList = $("#url-forms");
 
 let currentImageId = 0;
+let overridenSlideIndex = null;
 let timer;
+
 
 // const preLoadedImages = [];
 let preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_doctor_patient_computer_ehr_800x600.jpg",
-  "https://www.healthcareitnews.com/sites/default/files/doctor%20with%20ehr%20712_3.jpg",
-  "https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
-  "http://www.mosmedicalrecordreview.com/blog/wp-content/uploads/2017/09/physician-patient-interaction.jpg"];
+"https://www.healthcareitnews.com/sites/default/files/doctor%20with%20ehr%20712_3.jpg",
+"https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
+"http://www.mosmedicalrecordreview.com/blog/wp-content/uploads/2017/09/physician-patient-interaction.jpg"];
 // preLoadedImages = [];
 
 $(document).ready(event => {
@@ -25,9 +27,15 @@ $(document).ready(event => {
   prepopulateImage(1);
 });
 
-const getImageData = image => {
-  return {"image" : image};
-};
+const buildSlideshowData =
+$slideWrapper =>
+$dotContainer => 
+imageValue =>
+{
+  const mappedValue = [$slideWrapper, $dotContainer, imageValue];
+  slideshowValues.push(mappedValue);
+  return mappedValue;
+}
 
 const setTimer = timeInSeconds => {
   timer = isNaN(timeInSeconds) || timeInSeconds < .1 ? 1000 : timeInSeconds * 1000;
@@ -72,7 +80,7 @@ function setTimerActions(event) {
 
 const setSlideStyleDisplay = (slides, index, display) => {
   slides[index].style.display = display;
- }
+}
 
 function prepopulateImage(numForms) {
   for (let i = 0; i < numForms; i++) {
@@ -139,88 +147,83 @@ function addImageToSlideShow(id) {
 function addImageUrlToSlideShow(url, captionText, id) {
   const image = document.createElement("img");
   image.src = url;
-  imageData.set(id, getImageData(image));
-  setImageToSlideShow(id);
+  setImageToSlideShow(id, image);
 }
 
 function addUploadedImageToSlideShow(image, captionText, id) {  
-  imageData.set(id, getImageData(image));
-  setImageToSlideShow(id);
+  setImageToSlideShow(id, image);
 }
 
-function setImageToSlideShow(id) {
-  let info = imageData.get(id);
-  let display = imageData.length === 0 ? "inline-block" : "none";
+const setDimensionOfImage = (img) => {
+  const heightDif = window.innerHeight - img.height;
+  const widthDif = window.innerWidth - img.width;
+  if (heightDif < widthDif) {
+    img.height = window.innerHeight;  
+  } else {
+    img.width = window.innerWidth;  
+  }
+}
 
-  const getSlideImageWrapper = (id, display) => "<div class='mySlides fade-image' id='image-" + id + "'style='display:" + display + ";'><div class='numbertext'></div>" +
-  "<div class='text'></div></div>";
-  const getDotContainer = (id) => "<span class='dot' id='dot-" + id + "'></span>";
-  const setDimensionOfImage = (info) => {
-    const heightDif = window.innerHeight - info.image.height;
-    const widthDif = window.innerWidth - info.image.width;
-    if (heightDif < widthDif) {
-      info.image.height = window.innerHeight;  
+const buildDotContainer = (id) => {
+  return $dotContainer = $("<span>", {id: 'dot-' + id, class: 'dot'})
+};
+
+const getSlideImageWrapper = (id, display) => $("<div>", {id: 'image-' + id, class: 'mySlides fade-image', 'style':'display:' + display});
+
+function setImageToSlideShow(id, image) {  
+  const $dot = buildDotContainer(id);
+  const display = slideshowValues.length === 0 ? "inline-block" : "none";
+  const $slideWrapper = getSlideImageWrapper(id, display);
+  const info = buildSlideshowData($slideWrapper)($dot)(image);
+
+  setDimensionOfImage(info[2]);
+  $(".slideshow-container").append(info[0]);
+  $(".dot-container").append(info[1]);
+  $("#image-" + id).append(info[2]);
+  
+  setActionToDot(info[1]);
+
+  if (slideshowValues.length === 1) {
+   showSlides(0, true);
+ }
+}
+
+const setActionToDot = (dot) => {
+  let id = dot[0].getAttribute('id');
+  $('#' + id).on('click', function() {
+    overridenSlideIndex = getSlideshowValueIndexOnDotId(id);
+  });
+}
+
+function showSlides(slideIndex, shouldShowNextSlide) {
+  if (overridenSlideIndex != null) {
+    slideIndex = overridenSlideIndex;
+    overridenSlideIndex = null;
+  }
+  for (let i=0; i < slideshowValues.length; i++) {
+    const isCurrentIndex = i === slideIndex ? true : false;
+    const current = slideshowValues[i]
+    const $wrapper = current[0][0];
+    const $dot = current[1];
+
+    $wrapper.style.display = isCurrentIndex ? 'inline-block': 'none';
+
+    if (isCurrentIndex) {
+      $dot.addClass("active-dot");
     } else {
-      info.image.width = window.innerWidth;  
+      $dot.removeClass("active-dot");
     }
   }
 
-  setDimensionOfImage(info);
-
-  $(".slideshow-container").append(getSlideImageWrapper(id, display));
-  $("#image-" + id).append(info.image);
-  $(".dot-container").append(getDotContainer(id));
-
-  if (imageData.size === 1) {
-   let slideIndex = 0;
-   let shouldShowNextSlide = true;
-   showSlides(slideIndex, [], shouldShowNextSlide);
-  }
-}
-
-function showSlides(slideIndex, dotActions, shouldShowNextSlide) {
-  console.log(shouldShowNextSlide);
-  const setActionToDot = (dot) => {
-      let id = '#' + dot.getAttribute('id');
-      $(id).on('click', function() {
-        shouldShowNextSlide = false;
-        // showSlides(3, [], true);
-        console.log('User clicked on ' + id);
-      });
-    }
-
-  if (shouldShowNextSlide) {
-    let i;
-    let slides = document.getElementsByClassName("mySlides");
-    let dots = document.getElementsByClassName("dot");
-
-    if (dots.length !== dotActions.length) {
-      Array.prototype.forEach.call(dots, setActionToDot);
-    }
-
-    if (slides.length !== 0) {
-      for (i = 0; i < slides.length; i++) {
-        setSlideStyleDisplay(slides, i, "none");
-      }
-      // resetting slideIndex back to 0 
-      if (slideIndex + 1 > slides.length) {
+  wto = setTimeout(function() {
+    if (shouldShowNextSlide) {
+      slideIndex++;
+      if (slideIndex >= slideshowValues.length) {
         slideIndex = 0;
       }
-      
-      for (i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(" active-dot", "");
-        // setActionToDot(dots[i]);
-      }
-      slides[slideIndex].style.display = "inline-block";  
-      dots[slideIndex].className += " active-dot";
-      slideIndex++;
-    }
-    wto = setTimeout(function() {
-      if (shouldShowNextSlide) {
-        showSlides(slideIndex++, dotActions, shouldShowNextSlide)
-      };
-    }, timer);
-  }
+      showSlides(slideIndex, shouldShowNextSlide)
+    };
+  }, timer);
 }
 
 function removeImageFromSlideShow(id) {
@@ -228,10 +231,25 @@ function removeImageFromSlideShow(id) {
   idDot = "dot-" + id;
   idForm = "image-text-" + id;
   idUrlForm = "url-form-" + id;
+  removeImageFromData(idDot);
   document.getElementById(idDot).remove();
   document.getElementById(idUrlForm).remove();
   document.getElementById(idImage).remove();
   $("#" + idForm).val("");
+}
+
+const getSlideshowValueIndexOnDotId = (idDot) => {
+  for (let i = 0 ; i < slideshowValues.length; i++) {
+    // figure a better way to get the right object
+    if (idDot === slideshowValues[i][1].attr('id')) {
+      return i;
+    }
+  }
+}
+
+const removeImageFromData = (idDot) =>{
+  const index = getSlideshowValueIndexOnDotId(idDot);
+  slideshowValues.splice(index,1);
 }
 
 function showThumbnail(files){

@@ -127,6 +127,10 @@ body {
   text-align:center;
 }
 
+.dot:hover {
+  cursor:pointer;
+}
+
 #box {
   width:470px;
 }
