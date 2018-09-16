@@ -1,10 +1,11 @@
+// stores DOM image objects
 const imageData = new Map();
-// list of all the input fields
+// the list of image input fields
 const $inputFormList = $("#url-forms");
 
 let slideIndex = 0;
 let currentImageId = 0;
-let timer = 4;
+let timer;
 
 // const preLoadedImages = [];
 const preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_doctor_patient_computer_ehr_800x600.jpg",
@@ -12,13 +13,15 @@ const preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_d
   "https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
   "http://www.mosmedicalrecordreview.com/blog/wp-content/uploads/2017/09/physician-patient-interaction.jpg"];
 
-$(document).ready(function(event) {
-  if (preLoadedImages != null && preLoadedImages.length > 0) {
-    timer = 15;
+$(document).ready(event => {
+  setTimerActions(event);
+  hasPreloadedImages = (preLoadedImages != null && preLoadedImages.length > 0);
+  setTimer(hasPreloadedImages ? 15 : 4);
+
+  if (hasPreloadedImages) {
     setPresetImages(preLoadedImages);
   }
   setFileUploadInput();
-  setTimerActions(event);
   prepopulateImage(1);
 });
 
@@ -48,7 +51,8 @@ function setFileUploadInput() {
 }
 
 function setTimerActions(event) {
-  $('#timer').keydown(function(event) {
+  const $timer = $('#timer');
+  $timer.keydown(function(event) {
     if (event.keyCode == 13) {
       setTimer(this.valueAsNumber);
       this.blur();
@@ -57,15 +61,13 @@ function setTimerActions(event) {
   });
 
   let wto;
-  $('#timer').keyup(function() {
+  $timer.keyup(function() {
     clearTimeout(wto);
     let val = this.valueAsNumber;
     wto = setTimeout(function() {
       setTimer(val);
     }, 1000);
   });
-
-  setTimer(timer);
 }
 
 const setSlideStyleDisplay = (slides, index, display) => {
