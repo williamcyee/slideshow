@@ -8,7 +8,8 @@ let timer = 4;
 
 // const preLoadedImages = [];
 const preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_doctor_patient_computer_ehr_800x600.jpg",
-  "https://www.healthcareitnews.com/sites/default/files/doctor%20with%20ehr%20712_3.jpg", "https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
+  "https://www.healthcareitnews.com/sites/default/files/doctor%20with%20ehr%20712_3.jpg",
+  "https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
   "http://www.mosmedicalrecordreview.com/blog/wp-content/uploads/2017/09/physician-patient-interaction.jpg"];
 
 $(document).ready(function(event) {
