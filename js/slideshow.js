@@ -1,30 +1,15 @@
 const imageData = new Map();
+// list of all the input fields
+const $inputFormList = $("#url-forms");
 
 let slideIndex = 0;
-let imageIndex = 0;
+let currentImageId = 0;
 let timer = 4;
+
 // const preLoadedImages = [];
 const preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_doctor_patient_computer_ehr_800x600.jpg",
   "https://www.healthcareitnews.com/sites/default/files/doctor%20with%20ehr%20712_3.jpg", "https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
   "http://www.mosmedicalrecordreview.com/blog/wp-content/uploads/2017/09/physician-patient-interaction.jpg"];
-
-const getImageData = 
-image => {
-  return {"image" : image};
-};
-
-const setTimer = (timeInSeconds) => {
-  timer = isNaN(timeInSeconds) || timeInSeconds < .1 ? 1000 : timeInSeconds * 1000;
-  $('#currentTime').text(timer/1000 + " seconds");
-}
-
-const setPresetImages = (presetImages) => {
-  presetImages.forEach(function(element) {
-    addDisabledImageForm(element);
-    addImageUrlToSlideShow(element, "Caption", imageIndex);
-    imageIndex++;
-  }); 
-}
 
 $(document).ready(function(event) {
   if (preLoadedImages != null && preLoadedImages.length > 0) {
@@ -35,6 +20,23 @@ $(document).ready(function(event) {
   setTimerActions(event);
   prepopulateImage(1);
 });
+
+const getImageData = image => {
+  return {"image" : image};
+};
+
+const setTimer = timeInSeconds => {
+  timer = isNaN(timeInSeconds) || timeInSeconds < .1 ? 1000 : timeInSeconds * 1000;
+  $('#currentTime').text(timer/1000 + " seconds");
+}
+
+const setPresetImages = presetImages => {
+  presetImages.forEach(element => {
+    addDisabledImageForm(element);
+    addImageUrlToSlideShow(element, "Caption", currentImageId);
+    currentImageId++;
+  }); 
+}
 
 function setFileUploadInput() {
   const fileInput = document.getElementById("upload-image");
@@ -97,7 +99,7 @@ function showSlides() {
 function prepopulateImage(numForms) {
   for (let i = 0; i < numForms; i++) {
     addImageFormToHtml(true);
-    imageIndex++;
+    currentImageId++;
   }
 }
 
@@ -106,23 +108,21 @@ function addDisabledImageForm(imageName) {
 }
 
 function addImageFormToHtml(isEnabled, imageName) {
-  let formId = "#url-forms";
-  let getTextLabel = (id) => "<label> Image " + (id + 1) + " </label> ";
-  let $textField = isEnabled ? buildTextField(imageIndex) : buildDisabledTextField(imageIndex, imageName);
-  let currIndex = imageIndex;
-  $textField.keydown(function(event) {
+  const $textField = isEnabled ? buildTextField(currentImageId) : buildDisabledTextField(currentImageId, imageName);
+  let currIndex = currentImageId;
+  $textField.keydown(event => {
     if (event.keyCode == 13) {
       addImageToSlideShow(currIndex);
     }
   });
 
-  let itemId = "url-form-" + imageIndex;
+  let itemId = "url-form-" + currentImageId;
   let $formItem = $("<li height='35'>", {id: itemId, "class": "row fade-image form-list"});
   $formItem.attr('id', itemId);
   $formItem.attr('class', 'fade-image');
   $formItem.append($textField);
-  $formItem.append(buildButtons(imageIndex));
-  $(formId).append($formItem);
+  $formItem.append(buildButtons(currentImageId));
+  $inputFormList.append($formItem);
 
   $textField.focus();
 }
@@ -143,18 +143,18 @@ function buildButtons(id) {
 function buildButtonEnabledDisabled(id, isEnabled) {
   let onAddAction = isEnabled ? "' onclick='addImageToSlideShow(" + id + ")'"
   : " disabled'";
-  let onDeleteAction = "' onclick='removeImageToSlideShow(" + id + ")'";
+  let onDeleteAction = "' onclick='removeImageFromSlideShow(" + id + ")'";
   return " <button class='btn btn-success" + onAddAction + "><i class='fa fa-check'></i></button>"
   + " <button class='btn btn-danger" + onDeleteAction + "><i class='fa fa-close'></i></button>";
 }
 
 function addImageToSlideShow(id) {
-  imageId = "image-text-" + id;
-  const url = $("#" + imageId).val();
+  currentImageId = "image-text-" + id;
+  const url = $("#" + currentImageId).val();
   if (url != null && url != "") {
     addImageUrlToSlideShow(url, "Caption", id);
     addImageFormToHtml(true, "");
-    imageIndex++;
+    currentImageId++;
   }
 }
 
@@ -178,7 +178,7 @@ function setImageToSlideShow(id) {
   "<div class='text'></div></div>";
   const getDotContainer = (id) => "<span class='dot' id='dot-" + id + "'></span>";
   const setDimensionOfImage = (info) => {
-      const heightDif = window.innerHeight - info.image.height;
+    const heightDif = window.innerHeight - info.image.height;
     const widthDif = window.innerWidth - info.image.width;
     if (heightDif < widthDif) {
       info.image.height = window.innerHeight;  
@@ -198,7 +198,7 @@ function setImageToSlideShow(id) {
   }
 }
 
-function removeImageToSlideShow(id) {
+function removeImageFromSlideShow(id) {
   idImage = "image-" + id;
   idDot = "dot-" + id;
   idForm = "image-text-" + id;
@@ -211,17 +211,19 @@ function removeImageToSlideShow(id) {
 
 function showThumbnail(files){
   for(let i=0;i<files.length;i++){
-    imageIndex++;
+    currentImageId++;
     const file = files[i]
     const imageType = /image.*/
     if(!file.type.match(imageType)){
-      console.log("Not an Image");
+      const warningText = file.name + " is not an image.";
+      console.log(warningText);
+      alert(warningText);
       continue;
     }
 
     const image = document.createElement("img");
     image.file = file;
-    addUploadedImageToSlideShow(image, "Caption", imageIndex);
+    addUploadedImageToSlideShow(image, "Caption", currentImageId);
     addDisabledImageForm(file.name);
 
     const reader = new FileReader()
