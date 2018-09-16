@@ -148,6 +148,9 @@ li:before{
   max-width: 1000px;
   position: relative;
   margin: auto;
+  text-align:center;
+  height: 250px;
+  vertical-align: middle;
 }
 
 /* Caption text */
