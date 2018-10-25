@@ -9,10 +9,11 @@ let timer;
 
 
 // const preLoadedImages = [];
-let preLoadedImages = ["https://img.medscape.com/thumbnail_library/is_151022_doctor_patient_computer_ehr_800x600.jpg",
-"https://www.healthcareitnews.com/sites/default/files/doctor%20with%20ehr%20712_3.jpg",
-"https://www.healthcareitnews.com/sites/default/files/doctor-patient-tablet-stock-712_0.jpg",
-"http://www.mosmedicalrecordreview.com/blog/wp-content/uploads/2017/09/physician-patient-interaction.jpg"];
+let preLoadedImages = [
+"https://images.pexels.com/photos/596940/pexels-photo-596940.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+"https://images.pexels.com/photos/1157390/pexels-photo-1157390.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=350",
+"https://images.pexels.com/photos/955453/pexels-photo-955453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=350",
+"https://images.pexels.com/photos/995301/pexels-photo-995301.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=350"];
 // preLoadedImages = [];
 
 $(document).ready(event => {
