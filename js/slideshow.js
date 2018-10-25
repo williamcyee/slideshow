@@ -156,13 +156,18 @@ function addUploadedImageToSlideShow(image, captionText, id) {
 }
 
 const setDimensionOfImage = (img) => {
-  const heightDif = window.innerHeight - img.height;
-  const widthDif = window.innerWidth - img.width;
+  let heightDif = window.innerHeight - img.height;
+  let widthDif = window.innerWidth - img.width;
+
   if (heightDif < widthDif) {
     img.height = window.innerHeight;  
   } else {
     img.width = window.innerWidth;  
   }
+}
+
+function isMobilePortrait() {
+  return window.innerWidth < 450;
 }
 
 const buildDotContainer = (id) => {

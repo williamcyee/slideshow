@@ -223,8 +223,9 @@ li:before{
 /* On smaller screens, decrease text size */
 @media only screen and (max-width: 800px) {
   .side-bar-title {
-    margin-top:20px;
+    margin-top:10px;
   }
+
   .text {
     font-size: 35px
   }
@@ -261,6 +262,24 @@ li:before{
   ::-webkit-scrollbar-track {
       border-radius: 10px;  
       background-color: #ffffff; 
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  input[type='text'] {
+    width:100px;
+  }
+
+  input[type='number'] {
+    width:100px;
+  }
+
+  #box {
+    width:90%;
+  }
+
+  #btn.active {
+    left:78%;
   }
 }
 
