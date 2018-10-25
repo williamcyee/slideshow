@@ -10,10 +10,13 @@ let timer;
 
 // const preLoadedImages = [];
 let preLoadedImages = [
-"https://images.pexels.com/photos/596940/pexels-photo-596940.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-"https://images.pexels.com/photos/1157390/pexels-photo-1157390.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=350",
-"https://images.pexels.com/photos/955453/pexels-photo-955453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=350",
-"https://images.pexels.com/photos/995301/pexels-photo-995301.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=350"];
+"resources/images/parents/air-balloon.jpg",
+"resources/images/parents/mom-child.jpg",
+"resources/images/parents/background.jpg",
+"resources/images/parents/child-book.jpg",
+"resources/images/parents/cool-book.jpg",
+"resources/images/parents/dad-child.jpg",
+];
 // preLoadedImages = [];
 
 $(document).ready(event => {

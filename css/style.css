@@ -3,7 +3,7 @@
 }
 
 body {
-  background-color: #343838;
+  background-color: black;
   font-size: 16px;
   font-family: Verdana,sans-serif;
 }
@@ -15,7 +15,6 @@ body {
   height: 100%;
 }
 #slideshow {
-  position:absolute;
   top:0;
   padding:0;
 }
