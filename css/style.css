@@ -177,6 +177,14 @@ li:before{
   top: 0;
 }
 
+.section-break-file-upload {
+  height:2.5em;
+}
+
+.section-break-images {
+  height:1.5em;
+}
+
 /* The dots/bullets/indicators */
 .dot {
   height: 15px;
@@ -214,7 +222,46 @@ li:before{
 
 /* On smaller screens, decrease text size */
 @media only screen and (max-width: 800px) {
-  .text {font-size: 35px}
+  .side-bar-title {
+    margin-top:20px;
+  }
+  .text {
+    font-size: 35px
+  }
+  .section-break-images{
+    height:0em;
+  }
+
+  #box {
+    overflow:hidden;
+  }
+
+  .section-break-file-upload {
+    height: 1em;
+  }
+
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+
+  ::-webkit-scrollbar:vertical {
+      width: 12px;
+  }
+
+  ::-webkit-scrollbar:horizontal {
+      height: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, .5);
+      border-radius: 10px;
+      border: 2px solid #ffffff;
+  }
+
+  ::-webkit-scrollbar-track {
+      border-radius: 10px;  
+      background-color: #ffffff; 
+  }
 }
 
 .mySlides {
